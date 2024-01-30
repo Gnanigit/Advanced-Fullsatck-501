@@ -40,11 +40,15 @@
             <a href="/allEvents">Back</a> 
         </div>
        <div class="back-button">
-        <% if (flag==0) { %>
-            <a href="/registerEvent?eventId=<%= eventId %>"><button class="add-topic">Register Event</button></a>
-        <% } else { %>
-            <button class="add-topic" disabled>Registration Closed</button>
-            <%}%>
+        <% if (hex==1) { %>
+            <a href="/unRegister?eventId=<%= eventId %>"><button class="add-topic">Un Register Event</button></a>
+        <%} else {%> 
+                <% if (flag==0) { %>
+                    <a href="/registerEvent?eventId=<%= eventId %>"><button class="add-topic">Register Event</button></a>
+                <% } else{ %>
+                    <button class="add-topic" disabled>Registration Closed</button>
+                <%}%>
+        <%}%>
         </div>
     </div>
 

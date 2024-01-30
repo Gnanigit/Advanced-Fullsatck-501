@@ -16,6 +16,7 @@ sports.use(bodyParser.json())
 sports.set('views', './views');
 const path=require("path");
 const allevents = require('./models/allevents');
+const { register } = require('module');
 sports.use(express.urlencoded({extended:false}));
 sports.use(cookieParser("shh! some secret string"))
 sports.use(csrf("this_should_be_32_character_long",["POST","PUT","DELETE"]))
@@ -188,6 +189,7 @@ sports.get('/allEvents', connectEnsureLogin.ensureLoggedIn(), async (request, re
     }
     else{
       console.log("hello")
+      hex=0;
       response.render('SallEvents', { title: 'AllEvents',name: request.user.firstName ,FormattedEventData,  csrfToken: request.csrfToken() });
     }
   } catch (error) {
@@ -219,6 +221,8 @@ catch(err){
 
 // ------------- USER FUNTIONALITIES -------------
 
+let hex=0
+
 
 sports.get('/dashBoard',  connectEnsureLogin.ensureLoggedIn(), (request, response) => {
   response.render('dashBoard', {name: request.user.firstName}); 
@@ -240,11 +244,11 @@ sports.get('/viewEvent', connectEnsureLogin.ensureLoggedIn(), async(request, res
       console.log(eventCont.eventEndDate+"      "+new Date(),+"          "+flag)
       console.log(request.user.email)
     if(request.user.email==="admin@gmail.com"){
-        response.render("viewEvent",{eventCont, eventId,flag})
+        response.render("viewEvent",{eventCont, eventId,flag,hex})
     }
 
     else{
-      response.render("SviewEvent",{eventCont, eventId,flag})
+      response.render("SviewEvent",{eventCont, eventId,flag,hex})
     }
   }
   catch(err){
@@ -278,7 +282,7 @@ sports.get("/myEvents", connectEnsureLogin.ensureLoggedIn(), async (request, res
           formattedData.push(eventDetails);
       }
 
-      
+      hex=1;
       response.render('myEvents', { formattedData ,name:request.user.firstName});
   } catch (error) {
       console.error("Error retrieving data:", error);
@@ -338,7 +342,21 @@ sports.get("/registerEvent",connectEnsureLogin.ensureLoggedIn(),async(request, r
   } 
 })
 
-
+sports.get("/unRegister",connectEnsureLogin.ensureLoggedIn(),async(request, response)=>{
+  const ev=request.query.eventId;
+  try{
+    await Registers.destroy({
+      where :{
+        userId:request.user.id,
+        eventId:ev
+      }
+    })
+    response.redirect("/myEvents");
+  }
+  catch(err){
+    console.log(err);
+  }
+})
 
 
 
